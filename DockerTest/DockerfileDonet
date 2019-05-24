@@ -1,0 +1,29 @@
+#######################################################
+##Netcore Linux探针docker使用demo                 ##
+#######################################################
+
+#表示新镜像所依赖的基础镜像
+FROM microsoft/aspnetcore:2.0
+
+#COPY表示拷贝当前系统下的哪个目录（为探针所在的目录）在本地环境将探针安装包解压，并编辑解压后文件夹中的config文件
+COPY ./bonree_agent/  /bonree_agent
+
+#网站的工作目录
+#WORKDIR  /bonree_agent
+
+#进入探针安装包文件夹安装探针
+#RUN  cd bonree_dotnet_core_agent_v1.2.100223
+WORKDIR  /bonree_agent/bonree_dotnet_core_agent_v1.2.100223
+RUN  chmod +x install.sh
+RUN  ./install.sh
+
+#配置相关的环境变量
+ENV  CORECLR_ENABLE_PROFILING  1
+ENV  CORECLR_PROFILER  {22B677AD-2950-4169-B330-633D8DBBDE9F}
+ENV  CORECLR_PROFILER_PATH   {INSTALL_PATH}/Bin/CorProfiler.so
+
+
+#执行网站
+#CMD cd  WebApplication
+WORKDIR  /bonree_agent/WebApplication
+CMD ["dotnet", "WebApplication3.dll"]

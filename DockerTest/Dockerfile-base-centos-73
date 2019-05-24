@@ -1,0 +1,35 @@
+#FROM docker.io/centos:7
+FROM centos:7
+RUN yum install epel-release -y \
+    && yum install python-pip -y \
+    && yum install python-devel -y \
+    && yum install gcc mysql-devel -y \
+    && yum install gcc-c++ -y \
+    && yum -y install gcc make wget \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && \cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && pip install gunicorn \
+    # apache2安装配置
+    && yum install httpd  -y \
+    && yum install mod_wsgi -y \
+    && sed -i 's/#ServerName www.example.com:80/ServerName localhost:80/g' /etc/httpd/conf/httpd.conf \
+    # nginx+uwsgi安装配置
+    && pip install uwsgi \
+    && wget https://ftp.pcre.org/pub/pcre/pcre-8.35.tar.gz \
+    && tar xzf pcre-8.35.tar.gz \
+    && cd pcre-8.35/ \
+    && ./configure \
+    && make && make install \
+    && cd .. \
+    && wget http://211.161.151.151/files/92230000001C196B/nginx.org/download/nginx-1.6.3.tar.gz \
+    && tar xzf nginx-1.6.3.tar.gz \
+    && cd nginx-1.6.3/ \
+    && ./configure \
+    && make && make install \
+    && cd / \
+    && rm -rf pcre-8.35.tar.gz \
+    && rm -rf pcre-8.35 \
+    && rm -rf nginx-1.6.3.tar.gz \
+    && rm -rf nginx-1.6.3
+
+
